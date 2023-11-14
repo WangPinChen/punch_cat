@@ -24,22 +24,17 @@ function Login() {
       document.cookie = `hexToken=${token};expired=${expired}`
       navigate('/admin')
     } catch (error) {
-      console.log(error.response.data)
       setLoginState(error.response.data)
     }
 
   }
 
   useEffect(() => {
-    const token = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('hexToken='))
-      ?.split('=')[1];
-    axios.defaults.headers.common['Authorization'] = token;
-    (async () => {
-      const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
-      console.log(res.data)
-    })()
+
+    // (async () => {
+    //   const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
+    //   console.log(res.data)
+    // })()
   }, [])
 
   return (<div className="container py-5">
