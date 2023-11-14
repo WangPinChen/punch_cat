@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -28,14 +28,6 @@ function Login() {
     }
 
   }
-
-  useEffect(() => {
-
-    // (async () => {
-    //   const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
-    //   console.log(res.data)
-    // })()
-  }, [])
 
   return (<div className="container py-5">
     <div className="row justify-content-center">

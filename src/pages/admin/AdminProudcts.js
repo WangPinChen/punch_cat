@@ -1,6 +1,16 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
 export default function AdminProudcts() {
+  const [products, setProducts] = useState([])
+  const [pagination, setPagintion] = useState({})
+  useEffect(() => {
+    (async () => {
+      const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
+      setProducts(res.data.products)
+      setPagintion(res.data.pagination)
+    })()
+  }, [])
   return (
     <div className="w-100">
       {/* Products */}
@@ -26,26 +36,31 @@ export default function AdminProudcts() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>分類</td>
-              <td>名稱</td>
-              <td>價格</td>
-              <td>啟用</td>
-              <td>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
-                >
-                  編輯
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline-danger btn-sm ms-2"
-                >
-                  刪除
-                </button>
-              </td>
-            </tr>
+            {products.map(product => {
+              return (
+                <tr key={product.id}>
+                  <td>{product.category}</td>
+                  <td>{product.title}</td>
+                  <td>{product.price}</td>
+                  <td>{product.is_enabled ? '啟用' : '未啟用'}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                    >
+                      編輯
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger btn-sm ms-2"
+                    >
+                      刪除
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
+
           </tbody>
         </table>
 
