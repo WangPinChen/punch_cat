@@ -1,7 +1,10 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate()
+  const [loginState, setLoginState] = useState({})
   const [data, setData] = useState({
     username: '',
     password: ''
@@ -15,39 +18,39 @@ function Login() {
   }
 
   const submit = async (e) => {
-    const res = await axios.post(`v2/admin/signin`, data)
-    const { token } = res.data
-    console.log(token)
+    try {
+      const res = await axios.post(`v2/admin/signin`, data)
+      const { token, expired } = res.data
+      document.cookie = `hexToken=${token};expired=${expired}`
+      navigate('/admin')
+    } catch (error) {
+      console.log(error.response.data)
+      setLoginState(error.response.data)
+    }
+
   }
-  // const [data, setData] = useState({
-  //   username: '',
-  //   password: ''
-  // });
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setData({ ...data, [name]: value });
-  // }
-
-  // const submit = async (e) => {
-  //   const res = await axios.post('/v2/admin/signin', data);
-  //   const { token } = res.data;
-  //   console.log(token)
-  //   axios.defaults.headers.common['Authorization'] = token;
-
-  //   // const productRes = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products/all`);
-  //   // console.log(productRes);
-  // }
-
+  useEffect(() => {
+    const token = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('hexToken='))
+      ?.split('=')[1];
+    axios.defaults.headers.common['Authorization'] = token;
+    (async () => {
+      const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
+      console.log(res.data)
+    })()
+  }, [])
 
   return (<div className="container py-5">
     <div className="row justify-content-center">
       <div className="col-md-6">
         <h2>登入帳號</h2>
 
-        <div className="alert alert-danger" role="alert">
-          錯誤訊息
-        </div>
+        {loginState.message && (<div className="alert alert-danger" role="alert">
+          {loginState.message}
+        </div>)}
+
         <div className="mb-2">
           <label htmlFor="email" className="form-label w-100">
             Email
