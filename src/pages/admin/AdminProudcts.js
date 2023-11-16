@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Modal } from 'bootstrap';
 
 import ProductModal from '../../conponents/ProductModal';
-
+import DeleteModal from '../../conponents/DeleteModal';
 
 export default function AdminProudcts() {
   const [products, setProducts] = useState([])
@@ -11,6 +11,7 @@ export default function AdminProudcts() {
   const [type, setType] = useState('create')
   const [templeProduct, setTempleProduct] = useState({})
   const productModal = useRef(null)
+  const deleteModal = useRef(null)
 
   const openProductModal = (type, product) => {
     setType(type)
@@ -20,14 +21,31 @@ export default function AdminProudcts() {
   const closeProductModal = () => {
     productModal.current.hide()
   }
+  const openDeleteModal = (product) => {
+    setTempleProduct(product)
+    deleteModal.current.show()
+  }
+  const closeDeleteModal = () => {
+    deleteModal.current.hide()
+  }
   const getProducts = async () => {
     const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
     setProducts(res.data.products)
     setPagintion(res.data.pagination)
   }
+  const deleteProduct = async (id) => {
+    try {
+      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${id}`)
+      getProducts()
+      closeDeleteModal()
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     productModal.current = new Modal('#productModal', { backdrop: 'static' });
+    deleteModal.current = new Modal('#deleteModal', { backdrop: 'static' });
     getProducts()
   }, [])
 
@@ -38,6 +56,11 @@ export default function AdminProudcts() {
         getProducts={getProducts}
         type={type}
         templeProduct={templeProduct} />
+      <DeleteModal
+        close={closeDeleteModal}
+        text={templeProduct.title}
+        handleDelete={deleteProduct}
+        id={templeProduct.id} />
       {/* Products */}
       <div className="p-3">
         <h3>產品列表</h3>
@@ -80,6 +103,7 @@ export default function AdminProudcts() {
                     <button
                       type="button"
                       className="btn btn-outline-danger btn-sm ms-2"
+                      onClick={() => { openDeleteModal(product) }}
                     >
                       刪除
                     </button>
