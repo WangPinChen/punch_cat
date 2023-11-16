@@ -1,7 +1,12 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-export default function ProductModal({ closeProductModal, getProducts }) {
+export default function ProductModal({
+  closeProductModal,
+  getProducts,
+  type,
+  templeProduct
+}) {
   const [data, setData] = useState({
     title: "",
     category: "",
@@ -22,7 +27,6 @@ export default function ProductModal({ closeProductModal, getProducts }) {
         [name]: Number(value)
       })
     } else if (name === 'is_enabled') {
-      console.log(e.target.checked)
       setData({
         ...data,
         [name]: +e.target.checked
@@ -36,9 +40,15 @@ export default function ProductModal({ closeProductModal, getProducts }) {
   }
 
   const handleSubmit = () => {
+    let api = `/v2/api/${process.env.REACT_APP_API_PATH}/admin/product`;
+    let method = 'post';
+    if (type === 'edit') {
+      api = `/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${templeProduct.id}`
+      method = 'put'
+    }
     (async () => {
       try {
-        await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product`, { data })
+        await axios[method](api, { data })
         getProducts()
         closeProductModal()
       } catch (error) {
@@ -46,6 +56,24 @@ export default function ProductModal({ closeProductModal, getProducts }) {
       }
     })();
   }
+
+  useEffect(() => {
+    if (type === 'create') {
+      setData({
+        title: "",
+        category: "",
+        origin_price: 100,
+        price: 300,
+        unit: "",
+        description: "",
+        content: "",
+        is_enabled: 1,
+        imageUrl: ""
+      })
+    } else if (type === 'edit') {
+      setData(templeProduct)
+    }
+  }, [type, templeProduct])
 
   return (
     <div
@@ -59,7 +87,7 @@ export default function ProductModal({ closeProductModal, getProducts }) {
         <div className='modal-content'>
           <div className='modal-header'>
             <h1 className='modal-title fs-5' id='exampleModalLabel'>
-              建立新商品
+              {type === 'create' ? '建立新商品' : `編輯 ${templeProduct.title}`}
             </h1>
             <button
               type='button'
@@ -215,7 +243,7 @@ export default function ProductModal({ closeProductModal, getProducts }) {
                         placeholder='請輸入產品說明內容'
                         className='form-check-input'
                         onChange={handleChange}
-                        value={data.is_enabled}
+                        checked={data.is_enabled}
                       />
                     </label>
                   </div>

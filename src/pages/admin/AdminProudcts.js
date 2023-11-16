@@ -8,9 +8,13 @@ import ProductModal from '../../conponents/ProductModal';
 export default function AdminProudcts() {
   const [products, setProducts] = useState([])
   const [pagination, setPagintion] = useState({})
+  const [type, setType] = useState('create')
+  const [templeProduct, setTempleProduct] = useState({})
   const productModal = useRef(null)
 
-  const openProductModal = () => {
+  const openProductModal = (type, product) => {
+    setType(type)
+    setTempleProduct(product)
     productModal.current.show()
   }
   const closeProductModal = () => {
@@ -29,7 +33,11 @@ export default function AdminProudcts() {
 
   return (
     <div className="w-100">
-      <ProductModal closeProductModal={closeProductModal} getProducts={getProducts} />
+      <ProductModal
+        closeProductModal={closeProductModal}
+        getProducts={getProducts}
+        type={type}
+        templeProduct={templeProduct} />
       {/* Products */}
       <div className="p-3">
         <h3>產品列表</h3>
@@ -38,7 +46,7 @@ export default function AdminProudcts() {
           <button
             type="button"
             className="btn btn-primary btn-sm"
-            onClick={openProductModal}
+            onClick={() => { openProductModal('create', {}) }}
           >
             建立新商品
           </button>
@@ -65,6 +73,7 @@ export default function AdminProudcts() {
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
+                      onClick={() => { openProductModal('edit', product) }}
                     >
                       編輯
                     </button>
