@@ -4,6 +4,7 @@ import { Modal } from 'bootstrap';
 
 import ProductModal from '../../conponents/ProductModal';
 import DeleteModal from '../../conponents/DeleteModal';
+import Pagination from '../../conponents/Pagination';
 
 export default function AdminProudcts() {
   const [products, setProducts] = useState([])
@@ -28,14 +29,15 @@ export default function AdminProudcts() {
   const closeDeleteModal = () => {
     deleteModal.current.hide()
   }
-  const getProducts = async () => {
-    const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
+  const getProducts = async (page = 1) => {
+    const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products?page=${page}`)
     setProducts(res.data.products)
     setPagintion(res.data.pagination)
+    console.log(res.data.pagination)
   }
   const deleteProduct = async (id) => {
     try {
-      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${id}`)
+      await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${id}`)
       getProducts()
       closeDeleteModal()
     } catch (error) {
@@ -114,35 +116,10 @@ export default function AdminProudcts() {
 
           </tbody>
         </table>
-
-        <nav aria-label="Page navigation example">
-          <ul className="pagination">
-            <li className="page-item">
-              <a className="page-link disabled" href="/" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            {
-              [...new Array(5)].map((_, i) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <li className="page-item" key={`${i}_page`}>
-                  <a
-                    className={`page-link ${(i + 1 === 1) && 'active'}`}
-                    href="/"
-                  >
-                    {i + 1}
-                  </a>
-
-                </li>
-              ))
-            }
-            <li className="page-item">
-              <a className="page-link" href="/" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <Pagination
+          pagination={pagination}
+          changPage={getProducts}
+        />
       </div>
       {/* Products end */}
     </div>
