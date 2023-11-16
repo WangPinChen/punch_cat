@@ -1,6 +1,13 @@
 import React from 'react'
 
-export default function DeleteModal({ close, text, handleDelete, id }) {
+export default function DeleteModal({
+  close,
+  text,
+  handleDelete,
+  id
+}) {
+  console.log(`text: ${text}`)
+  console.log(`id: ${id}`)
   return (
     <div
       className='modal fade'
@@ -27,7 +34,9 @@ export default function DeleteModal({ close, text, handleDelete, id }) {
             <button type='button' className='btn btn-secondary' onClick={close}>
               取消
             </button>
-            <button type='button' className='btn btn-danger' onClick={() => { handleDelete(id) }}>
+            <button type='button' className='btn btn-danger' onClick={() => {
+              handleDelete(id)
+            }}>
               確認刪除
             </button>
           </div>
