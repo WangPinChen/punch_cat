@@ -24,6 +24,7 @@ export default function AdminProudcts() {
       const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
       setProducts(res.data.products)
       setPagintion(res.data.pagination)
+      console.log(res.data.products)
     })()
   }, [])
   return (
