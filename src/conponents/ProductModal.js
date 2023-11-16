@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 
-export default function ProductModal({ closeProductModal }) {
+export default function ProductModal({ closeProductModal, getProducts }) {
   const [data, setData] = useState({
     title: "",
     category: "",
@@ -39,6 +39,8 @@ export default function ProductModal({ closeProductModal }) {
     (async () => {
       try {
         await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product`, { data })
+        getProducts()
+        closeProductModal()
       } catch (error) {
         console.log(error)
       }
@@ -67,7 +69,6 @@ export default function ProductModal({ closeProductModal }) {
             />
           </div>
           <div className='modal-body'>
-            <p>{JSON.stringify(data)}</p>
             <div className='row'>
               <div className='col-sm-4'>
                 <div className='form-group mb-2'>

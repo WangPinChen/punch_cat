@@ -16,20 +16,20 @@ export default function AdminProudcts() {
   const closeProductModal = () => {
     productModal.current.hide()
   }
+  const getProducts = async () => {
+    const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
+    setProducts(res.data.products)
+    setPagintion(res.data.pagination)
+  }
 
   useEffect(() => {
     productModal.current = new Modal('#productModal', { backdrop: 'static' });
-
-    (async () => {
-      const res = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`)
-      setProducts(res.data.products)
-      setPagintion(res.data.pagination)
-      console.log(res.data.products)
-    })()
+    getProducts()
   }, [])
+
   return (
     <div className="w-100">
-      <ProductModal closeProductModal={closeProductModal} />
+      <ProductModal closeProductModal={closeProductModal} getProducts={getProducts} />
       {/* Products */}
       <div className="p-3">
         <h3>產品列表</h3>
